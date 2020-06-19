@@ -17,17 +17,13 @@ Future<void> main() async {
       title: 'Image Annotator',
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Welcome to Flutter'),
-
+          title: Text('Image Annotator'),
         ),
-        body: Column(
-          children: [ HomePage(camera: cameras.first)],
-        ),
+        body: HomePage(camera: cameras.first),
       ),
     ),
   );
 }
-
 
 class HomePage extends StatelessWidget {
   HomePage({CameraDescription camera}) : this.this_camera = camera;
@@ -37,33 +33,84 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.grey[950],
-      child: Center(
-        child: Ink(
-          decoration: const ShapeDecoration(
-            color: Colors.lightBlue,
-            shape: CircleBorder(),
+      child: Column(
+
+        mainAxisAlignment: MainAxisAlignment.center,
+        //crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Ink(
+            decoration: const ShapeDecoration(
+              color: Colors.lightBlue,
+              shape: StadiumBorder(),
+            ),
+            child: FlatButton(
+              padding: EdgeInsets.all(15.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[Icon(Icons.camera), Text("camera")],
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        TakePictureScreen(camera: this_camera),
+                  ),
+                );
+              },
+            ),
           ),
-          child: IconButton(
-            icon: Icon(Icons.android),
-            color: Colors.white,
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => TakePictureScreen(camera: this_camera),
-                ),
-              );
-            },
+          SizedBox(height: 20),
+          Ink(
+            decoration: const ShapeDecoration(
+              color: Colors.lightBlue,
+              shape: StadiumBorder(),
+            ),
+            child: FlatButton(
+              padding: EdgeInsets.all(15.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[Icon(Icons.folder_shared), Text("Files")],
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        TakePictureScreen(camera: this_camera),
+                  ),
+                );
+              },
+            ),
           ),
-        ),
+          SizedBox(height: 20),
+          Ink(
+            decoration: const ShapeDecoration(
+              color: Colors.lightBlue,
+              shape: StadiumBorder(side: BorderSide(width: 0.5)),
+            ),
+            child: FlatButton(
+              padding: EdgeInsets.all(15.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Icon(Icons.label_important),
+                  Text("Labeling")
+                ],
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        TakePictureScreen(camera: this_camera),
+                  ),
+                );
+              },
+            ),
+          )
+        ],
       ),
     );
   }
 }
-
-
-//TakePictureScreen(
-//// Pass the appropriate camera to the TakePictureScreen widget.
-//camera: firstCamera,
-//)
-
