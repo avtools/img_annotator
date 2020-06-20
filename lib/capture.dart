@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:image/image.dart' as IM;
 import 'package:path/path.dart' show join;
 import 'package:path_provider/path_provider.dart';
 
@@ -117,6 +118,31 @@ class DisplayPictureScreen extends StatelessWidget {
       // The image is stored as a file on the device. Use the `Image.file`
       // constructor with the given path to display the image.
       body: Image.file(File(imagePath)),
+
+        floatingActionButton: FloatingActionButton.extended(
+            label: Text('Saver image'),
+            icon: Icon(Icons.thumb_up),
+            // Provide an onPressed callback.
+            onPressed: () {
+              Future<File> saveImage(File file) async {
+                try {
+                  var dir = await getExternalStorageDirectory();
+                  var testdir =
+                  await new Directory('${dir.path}/testfolder').create(
+                      recursive: true);
+                  IM.Image image = IM.decodeImage(file.readAsBytesSync());
+                  return new File(
+                      '${testdir.path}/${DateTime.now()
+                          .toUtc()
+                          .toIso8601String()}.png')
+                    ..writeAsBytesSync(IM.encodePng(image));
+                } catch (e) {
+                  print(e);
+                  return null;
+                }
+              }
+            }
+        )
     );
   }
 }
