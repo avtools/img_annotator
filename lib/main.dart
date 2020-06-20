@@ -4,6 +4,8 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:img_annotator/capture.dart';
 
+import 'utils.dart';
+
 Future<void> main() async {
   // Ensure that plugin services are initialized so that `availableCameras()`
   // can be called before `runApp()`
@@ -38,76 +40,35 @@ class HomePage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         //crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Ink(
-            decoration: const ShapeDecoration(
-              color: Colors.lightBlue,
-              shape: StadiumBorder(),
-            ),
-            child: FlatButton(
-              padding: EdgeInsets.all(15.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[Icon(Icons.camera), Text("camera")],
+          ClassicButton(Icons.camera, "Camera", () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    TakePictureScreen(camera: this_camera),
               ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        TakePictureScreen(camera: this_camera),
-                  ),
-                );
-              },
-            ),
-          ),
+            );
+          }),
           SizedBox(height: 20),
-          Ink(
-            decoration: const ShapeDecoration(
-              color: Colors.lightBlue,
-              shape: StadiumBorder(),
+          ClassicButton(Icons.folder_shared, "Files", () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    TakePictureScreen(camera: this_camera),
             ),
-            child: FlatButton(
-              padding: EdgeInsets.all(15.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[Icon(Icons.folder_shared), Text("Files")],
-              ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        TakePictureScreen(camera: this_camera),
-                  ),
-                );
-              },
-            ),
-          ),
+            );
+          }),
           SizedBox(height: 20),
-          Ink(
-            decoration: const ShapeDecoration(
-              color: Colors.lightBlue,
-              shape: StadiumBorder(side: BorderSide(width: 0.5)),
-            ),
-            child: FlatButton(
-              padding: EdgeInsets.all(15.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Icon(Icons.label_important),
-                  Text("Labeling")
-                ],
+          ClassicButton(Icons.label, "Labels", () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    TakePictureScreen(camera: this_camera),
               ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        TakePictureScreen(camera: this_camera),
-                  ),
-                );
-              },
-            ),
+            );
+          }
           )
         ],
       ),
