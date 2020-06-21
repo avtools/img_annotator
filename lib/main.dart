@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:img_annotator/capture.dart';
+import 'package:img_annotator/file_manager.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'utils.dart';
@@ -62,7 +63,13 @@ class HomePage extends StatelessWidget {
           }),
           SizedBox(height: 20),
           ClassicButton(Icons.folder_shared, "Files", () {
-            AppUtil.createFolderInAppDocDir('file_document');
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    ListFiles(),
+              ),
+            );
           }),
           SizedBox(height: 20),
           ClassicButton(Icons.label, "Labels", () {

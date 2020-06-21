@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:image/image.dart' as IM;
+import 'package:img_annotator/utils.dart';
 import 'package:path/path.dart' show join;
 import 'package:path_provider/path_provider.dart';
 
@@ -120,29 +120,13 @@ class DisplayPictureScreen extends StatelessWidget {
       body: Image.file(File(imagePath)),
 
         floatingActionButton: FloatingActionButton.extended(
-            label: Text('Saver image'),
+            label: Text('Save image'),
             icon: Icon(Icons.thumb_up),
             // Provide an onPressed callback.
             onPressed: () {
-              print(imagePath);
-              Future<File> saveImage(File file) async {
-                try {
-                  var dir = await getExternalStorageDirectory();
-                  var testdir =
-                  await new Directory('${dir.path}/testfolder').create(
-                      recursive: true);
-                  IM.Image image = IM.decodeImage(
-                      File(imagePath).readAsBytesSync());
-                  return new File(
-                      '${testdir.path}/${DateTime.now()
-                          .toUtc()
-                          .toIso8601String()}.png')
-                    ..writeAsBytesSync(IM.encodePng(image));
-                } catch (e) {
-                  print(e);
-                  return null;
-                }
-              }
+              saveImage(imagePath);
+              //print(imagePath);
+
             }
         )
     );

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:image/image.dart' as IM;
 import 'package:path_provider/path_provider.dart';
 class AppUtil {
   static Future<String> createFolderInAppDocDir(String folderName) async {
@@ -48,5 +49,24 @@ class ClassicButton extends StatelessWidget {
         onPressed: callback,
       ),
     );
+  }
+}
+
+Future<File> saveImage(String imagePath) async {
+  try {
+    var dir = await getExternalStorageDirectory();
+    var testdir =
+    await new Directory('${dir.path}').create(
+        recursive: true);
+    IM.Image image = IM.decodeImage(
+        File(imagePath).readAsBytesSync());
+    return new File(
+        '${testdir.path}/${DateTime.now()
+            .toUtc()
+            .toIso8601String()}.png')
+      ..writeAsBytesSync(IM.encodePng(image));
+  } catch (e) {
+    print(e);
+    return null;
   }
 }
