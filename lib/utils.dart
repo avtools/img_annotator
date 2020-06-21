@@ -3,15 +3,15 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-
 class AppUtil {
   static Future<String> createFolderInAppDocDir(String folderName) async {
+
     //Get this App Document Directory
-    final Directory _appDocDir = await getApplicationDocumentsDirectory();
+    final Directory _appDocDir = await getExternalStorageDirectory();
     //App Document Directory + folder name
     final Directory _appDocDirFolder =
         Directory('${_appDocDir.path}/$folderName/');
-
+    print(_appDocDirFolder);
     if (await _appDocDirFolder.exists()) {
       //if folder already exists return path
       return _appDocDirFolder.path;
@@ -23,6 +23,7 @@ class AppUtil {
     }
   }
 }
+
 
 class ClassicButton extends StatelessWidget {
   final String text;

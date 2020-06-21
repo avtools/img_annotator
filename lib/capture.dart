@@ -124,13 +124,15 @@ class DisplayPictureScreen extends StatelessWidget {
             icon: Icon(Icons.thumb_up),
             // Provide an onPressed callback.
             onPressed: () {
+              print(imagePath);
               Future<File> saveImage(File file) async {
                 try {
                   var dir = await getExternalStorageDirectory();
                   var testdir =
                   await new Directory('${dir.path}/testfolder').create(
                       recursive: true);
-                  IM.Image image = IM.decodeImage(file.readAsBytesSync());
+                  IM.Image image = IM.decodeImage(
+                      File(imagePath).readAsBytesSync());
                   return new File(
                       '${testdir.path}/${DateTime.now()
                           .toUtc()

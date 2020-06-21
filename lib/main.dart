@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:img_annotator/capture.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'utils.dart';
 
@@ -13,6 +14,16 @@ Future<void> main() async {
 // Obtain a list of the available cameras on the device.
   final cameras = await availableCameras();
 
+  var status = await Permission.storage.status;
+  if (status.isUndetermined) {
+    // You can request multiple permissions at once.
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.storage,
+      Permission.camera,
+    ].request();
+    print(statuses[Permission
+        .storage]); // it should print PermissionStatus.granted
+  }
   runApp(
     MaterialApp(
       theme: ThemeData.dark(),
@@ -51,13 +62,7 @@ class HomePage extends StatelessWidget {
           }),
           SizedBox(height: 20),
           ClassicButton(Icons.folder_shared, "Files", () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    TakePictureScreen(camera: this_camera),
-            ),
-            );
+            AppUtil.createFolderInAppDocDir('file_document');
           }),
           SizedBox(height: 20),
           ClassicButton(Icons.label, "Labels", () {
