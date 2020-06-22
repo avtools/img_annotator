@@ -56,19 +56,6 @@ class _FilePickerState extends State<Fetch_File> {
     });
   }
 
-  void _clearCachedFiles() {
-    FilePicker.clearTemporaryFiles().then((result) {
-      _scaffoldKey.currentState.showSnackBar(
-        SnackBar(
-          backgroundColor: result ? Colors.green : Colors.red,
-          content: Text((result
-              ? 'Temporary files removed with success.'
-              : 'Failed to clean temporary files')),
-        ),
-      );
-    });
-  }
-
   void _selectFolder() {
     FilePicker.getDirectoryPath().then((value) {
       setState(() => _path = value);
@@ -96,29 +83,15 @@ class _FilePickerState extends State<Fetch_File> {
                           hint: new Text('LOAD PATH FROM'),
                           value: _pickingType,
                           items: <DropdownMenuItem>[
-                            new DropdownMenuItem(
-                              child: new Text('FROM AUDIO'),
-                              value: FileType.audio,
-                            ),
+
                             new DropdownMenuItem(
                               child: new Text('FROM IMAGE'),
                               value: FileType.image,
                             ),
-                            new DropdownMenuItem(
-                              child: new Text('FROM VIDEO'),
-                              value: FileType.video,
-                            ),
-                            new DropdownMenuItem(
-                              child: new Text('FROM MEDIA'),
-                              value: FileType.media,
-                            ),
+
                             new DropdownMenuItem(
                               child: new Text('FROM ANY'),
                               value: FileType.any,
-                            ),
-                            new DropdownMenuItem(
-                              child: new Text('CUSTOM FORMAT'),
-                              value: FileType.custom,
                             ),
                           ],
                           onChanged: (value) =>
@@ -143,16 +116,7 @@ class _FilePickerState extends State<Fetch_File> {
                       )
                           : new Container(),
                     ),
-                    new ConstrainedBox(
-                      constraints: BoxConstraints.tightFor(width: 200.0),
-                      child: new SwitchListTile.adaptive(
-                        title: new Text('Pick multiple files',
-                            textAlign: TextAlign.right),
-                        onChanged: (bool value) =>
-                            setState(() => _multiPick = value),
-                        value: _multiPick,
-                      ),
-                    ),
+
                     new Padding(
                       padding: const EdgeInsets.only(top: 50.0, bottom: 20.0),
                       child: Column(
@@ -163,12 +127,9 @@ class _FilePickerState extends State<Fetch_File> {
                           ),
                           new RaisedButton(
                             onPressed: () => _selectFolder(),
-                            child: new Text("Pick folder"),
+                            child: new Text("Browse"),
                           ),
-                          new RaisedButton(
-                            onPressed: () => _clearCachedFiles(),
-                            child: new Text("Clear temporary files"),
-                          ),
+
                         ],
                       ),
                     ),
