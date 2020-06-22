@@ -67,7 +67,7 @@ class HomePage extends StatelessWidget {
               context,
               MaterialPageRoute(
                 builder: (context) =>
-                    ListFiles(),
+                    Fetch_File(),
               ),
             );
           }),
@@ -78,6 +78,16 @@ class HomePage extends StatelessWidget {
               MaterialPageRoute(
                 builder: (context) =>
                     TakePictureScreen(camera: this_camera),
+              ),
+            );
+          })
+          , SizedBox(height: 20),
+          ClassicButton(Icons.get_app, "Fetch Sources", () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    Fetch_File(),
               ),
             );
           }
