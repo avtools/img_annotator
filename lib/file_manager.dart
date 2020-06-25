@@ -27,21 +27,13 @@ class _FilePickerState extends State<Fetch_File> {
   void _openFileExplorer() async {
     setState(() => _loadingPath = true);
     try {
-      if (_multiPick) {
+
         _path = null;
         _paths = await FilePicker.getMultiFilePath(
-            type: _pickingType,
+            type: FileType.any,
             allowedExtensions: (_extension?.isNotEmpty ?? false)
                 ? _extension?.replaceAll(' ', '')?.split(',')
                 : null);
-      } else {
-        _paths = null;
-        _path = await FilePicker.getFilePath(
-            type: _pickingType,
-            allowedExtensions: (_extension?.isNotEmpty ?? false)
-                ? _extension?.replaceAll(' ', '')?.split(',')
-                : null);
-      }
     } on PlatformException catch (e) {
       print("Unsupported operation" + e.toString());
     }
@@ -53,12 +45,6 @@ class _FilePickerState extends State<Fetch_File> {
           .split('/')
           .last
           : _paths != null ? _paths.keys.toString() : '...';
-    });
-  }
-
-  void _selectFolder() {
-    FilePicker.getDirectoryPath().then((value) {
-      setState(() => _path = value);
     });
   }
 
@@ -77,31 +63,7 @@ class _FilePickerState extends State<Fetch_File> {
                 child: new Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    new Padding(
-                      padding: const EdgeInsets.only(top: 20.0),
-                      child: new DropdownButton(
-                          hint: new Text('LOAD PATH FROM'),
-                          value: _pickingType,
-                          items: <DropdownMenuItem>[
 
-                            new DropdownMenuItem(
-                              child: new Text('FROM IMAGE'),
-                              value: FileType.image,
-                            ),
-
-                            new DropdownMenuItem(
-                              child: new Text('FROM ANY'),
-                              value: FileType.any,
-                            ),
-                          ],
-                          onChanged: (value) =>
-                              setState(() {
-                                _pickingType = value;
-                                if (_pickingType != FileType.custom) {
-                                  _controller.text = _extension = '';
-                                }
-                              })),
-                    ),
                     new ConstrainedBox(
                       constraints: BoxConstraints.tightFor(width: 100.0),
                       child: _pickingType == FileType.custom
@@ -124,10 +86,6 @@ class _FilePickerState extends State<Fetch_File> {
                           new RaisedButton(
                             onPressed: () => _openFileExplorer(),
                             child: new Text("Open file picker"),
-                          ),
-                          new RaisedButton(
-                            onPressed: () => _selectFolder(),
-                            child: new Text("Browse"),
                           ),
 
                         ],

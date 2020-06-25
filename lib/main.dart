@@ -62,7 +62,7 @@ class HomePage extends StatelessWidget {
             );
           }),
           SizedBox(height: 20),
-          ClassicButton(Icons.folder_shared, "Files", () {
+          ClassicButton(Icons.folder_shared, "Export from", () {
             Navigator.push(
               context,
               MaterialPageRoute(
