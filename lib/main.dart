@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:camera/camera.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:img_annotator/capture.dart';
 import 'package:img_annotator/file_manager.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -42,7 +44,17 @@ Future<void> main() async {
 class HomePage extends StatelessWidget {
   HomePage({CameraDescription camera}) : this.this_camera = camera;
   final CameraDescription this_camera;
+  Map<String, String> _paths;
 
+  void openFileExplorer(Map<String, String> _paths) async {
+    try {
+      _paths = await FilePicker.getMultiFilePath(
+          type: FileType.image);
+      print(_paths);
+    } on PlatformException catch (e) {
+      print("Unsupported operation" + e.toString());
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -63,7 +75,8 @@ class HomePage extends StatelessWidget {
           }),
           SizedBox(height: 20),
           ClassicButton(Icons.folder_shared, "Export from", () {
-            openFileExplorer();
+            openFileExplorer(_paths);
+            print(_paths);
           }),
           SizedBox(height: 20),
           ClassicButton(Icons.label, "Labels", () {
@@ -81,7 +94,7 @@ class HomePage extends StatelessWidget {
               context,
               MaterialPageRoute(
                 builder: (context) =>
-                    Fetch_File(),
+                    Fetch_File(paths: _paths),
               ),
             );
           }

@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:image/image.dart' as IM;
 import 'package:path_provider/path_provider.dart';
 class AppUtil {
@@ -73,15 +71,5 @@ Future<File> saveImage(String imagePath) async {
   }
 }
 
-Future<String> openFileExplorer() async {
-  try {
-    String _path;
-    Map<String, String> _paths;
-    _paths = await FilePicker.getMultiFilePath(
-        type: FileType.image);
-    print(_paths);
-  } on PlatformException catch (e) {
-    print("Unsupported operation" + e.toString());
-  }
-}
+
 
