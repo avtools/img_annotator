@@ -34,6 +34,7 @@ class _FilePickerState extends State<Fetch_File> {
             allowedExtensions: (_extension?.isNotEmpty ?? false)
                 ? _extension?.replaceAll(' ', '')?.split(',')
                 : null);
+        print(_paths);
     } on PlatformException catch (e) {
       print("Unsupported operation" + e.toString());
     }
@@ -91,49 +92,7 @@ class _FilePickerState extends State<Fetch_File> {
                         ],
                       ),
                     ),
-                    new Builder(
-                      builder: (BuildContext context) =>
-                      _loadingPath
-                          ? Padding(
-                          padding: const EdgeInsets.only(bottom: 10.0),
-                          child: const CircularProgressIndicator())
-                          : _path != null || _paths != null
-                          ? new Container(
-                        padding: const EdgeInsets.only(bottom: 30.0),
-                        height: MediaQuery
-                            .of(context)
-                            .size
-                            .height * 0.50,
-                        child: new Scrollbar(
-                            child: new ListView.separated(
-                              itemCount: _paths != null && _paths.isNotEmpty
-                                  ? _paths.length
-                                  : 1,
-                              itemBuilder: (BuildContext context, int index) {
-                                final bool isMultiPath =
-                                    _paths != null && _paths.isNotEmpty;
-                                final String name = 'File $index: ' +
-                                    (isMultiPath
-                                        ? _paths.keys.toList()[index]
-                                        : _fileName ?? '...');
-                                final path = isMultiPath
-                                    ? _paths.values.toList()[index].toString()
-                                    : _path;
 
-                                return new ListTile(
-                                  title: new Text(
-                                    name,
-                                  ),
-                                  subtitle: new Text(path),
-                                );
-                              },
-                              separatorBuilder:
-                                  (BuildContext context, int index) =>
-                              new Divider(),
-                            )),
-                      )
-                          : new Container(),
-                    ),
                   ],
                 ),
               ),

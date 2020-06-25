@@ -63,13 +63,7 @@ class HomePage extends StatelessWidget {
           }),
           SizedBox(height: 20),
           ClassicButton(Icons.folder_shared, "Export from", () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    Fetch_File(),
-              ),
-            );
+            openFileExplorer();
           }),
           SizedBox(height: 20),
           ClassicButton(Icons.label, "Labels", () {
