@@ -41,12 +41,18 @@ Future<void> main() async {
   );
 }
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   HomePage({CameraDescription camera}) : this.this_camera = camera;
   final CameraDescription this_camera;
-  Map<String, String> _paths;
 
-  void openFileExplorer(Map<String, String> _paths) async {
+  @override
+  HomePageState createState() => new HomePageState();
+}
+
+class HomePageState extends State<HomePage> {
+  Map<String, String> _paths = null;
+
+  void openFileExplorer() async {
     try {
       _paths = await FilePicker.getMultiFilePath(
           type: FileType.image);
@@ -69,14 +75,14 @@ class HomePage extends StatelessWidget {
               context,
               MaterialPageRoute(
                 builder: (context) =>
-                    TakePictureScreen(camera: this_camera),
+                    TakePictureScreen(camera: widget.this_camera),
               ),
             );
           }),
           SizedBox(height: 20),
           ClassicButton(Icons.folder_shared, "Export from", () {
-            openFileExplorer(_paths);
-            print(_paths);
+            openFileExplorer();
+            //print(_paths);
           }),
           SizedBox(height: 20),
           ClassicButton(Icons.label, "Labels", () {
@@ -84,16 +90,18 @@ class HomePage extends StatelessWidget {
               context,
               MaterialPageRoute(
                 builder: (context) =>
-                    TakePictureScreen(camera: this_camera),
+                    TakePictureScreen(camera: widget.this_camera),
               ),
             );
           })
           , SizedBox(height: 20),
           ClassicButton(Icons.get_app, "Fetch Sources", () {
+            var neww = _paths;
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) =>
+
                     Fetch_File(paths: _paths),
               ),
             );
