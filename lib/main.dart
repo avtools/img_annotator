@@ -85,28 +85,15 @@ class HomePageState extends State<HomePage> {
             //print(_paths);
           }),
           SizedBox(height: 20),
-          ClassicButton(Icons.label, "Labels", () {
+          ClassicButton(Icons.label, "Labelling", () {
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) =>
-                    TakePictureScreen(camera: widget.this_camera),
-              ),
-            );
-          })
-          , SizedBox(height: 20),
-          ClassicButton(Icons.get_app, "Fetch Sources", () {
-            var neww = _paths;
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-
                     Fetch_File(paths: _paths),
               ),
             );
-          }
-          )
+          })
         ],
       ),
     );
