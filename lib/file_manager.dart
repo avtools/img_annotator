@@ -1,6 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:img_annotator/capture.dart';
+import 'package:img_annotator/painting.dart';
 class Fetch_File extends StatefulWidget {
   final Map<String, String> paths;
 
@@ -87,8 +87,9 @@ class _FilePickerState extends State<Fetch_File> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
-                                            DisplayPictureScreen(
-                                                imagePath: path),
+                                            DrawPage()
+                                        //DisplayPictureScreen(
+                                        //    imagePath: path),
                                       ),
                                     );
                                   },
