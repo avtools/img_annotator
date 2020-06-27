@@ -1,6 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-
+import 'package:img_annotator/capture.dart';
 class Fetch_File extends StatefulWidget {
   final Map<String, String> paths;
 
@@ -56,7 +56,7 @@ class _FilePickerState extends State<Fetch_File> {
                         height: MediaQuery
                             .of(context)
                             .size
-                            .height * 0.50,
+                            .height * 0.70,
                         child: new Scrollbar(
                             child: new ListView.separated(
 
@@ -82,11 +82,22 @@ class _FilePickerState extends State<Fetch_File> {
                                     name,
                                   ),
                                   subtitle: new Text(path),
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            DisplayPictureScreen(
+                                                imagePath: path),
+                                      ),
+                                    );
+                                  },
                                 );
                               },
                               separatorBuilder:
                                   (BuildContext context, int index) =>
                               new Divider(),
+
                             )),
                       )
                           : new Container(),
