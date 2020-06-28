@@ -60,17 +60,24 @@ class _DrawPageState extends State<DrawPage> {
           Offset offset = referenceBox.globalToLocal(event.position);
           setState(() {
             _end = offset;
-            print([_start, _end]);
           });
         },
-//        onPointerUp: (PointerUpEvent event) {
-//          RenderBox referenceBox = _paintKey.currentContext.findRenderObject();
-//          Offset offset = referenceBox.globalToLocal(event.position);
-//          setState(() {
-//            _offset = offset;
-//            print(offset);
-//          });
-//        },
+        onPointerUp: (PointerUpEvent event) {
+          print("alert");
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text("Accept?"),
+                  content: Text("Fix the bbox?"),
+                  actions: [
+                    FlatButton(child: Text("No")),
+                    FlatButton(child: Text("Yes"))
+                  ],
+                );
+              }
+          );
+        },
         child: new CustomPaint(
           key: _paintKey,
           painter: new MyCustomPainter(_start, _end, _image),
