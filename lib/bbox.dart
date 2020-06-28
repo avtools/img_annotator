@@ -1,14 +1,44 @@
+import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 
 class DrawPage extends StatefulWidget {
+  final String imagePath;
+
+  const DrawPage({Key key,
+    @required this.imagePath
+  }) : super(key: key);
+
   @override
-  State createState() => new DrawPageState();
+  _DrawPageState createState() => new _DrawPageState();
 }
 
-class DrawPageState extends State<DrawPage> {
+class _DrawPageState extends State<DrawPage> {
   GlobalKey _paintKey = new GlobalKey();
   Offset _start;
   Offset _end;
+  ui.Image _image;
+
+  @override
+  void initState() {
+    _loadImage(widget.imagePath);
+  }
+
+  _loadImage(String path) async {
+    //ByteData bd = await rootBundle.load("assets/sampleImagees.jpg");
+    //var listimage = File(path).readAsBytesSync();
+
+    final Uint8List bytes = File(path).readAsBytesSync();
+
+    final ui.Codec codec = await ui.instantiateImageCodec(bytes);
+
+    final ui.Image image = (await codec.getNextFrame()).image;
+
+    setState(() => _image = image);
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +73,7 @@ class DrawPageState extends State<DrawPage> {
 //        },
         child: new CustomPaint(
           key: _paintKey,
-          painter: new MyCustomPainter(_start, _end),
+          painter: new MyCustomPainter(_start, _end, _image),
           child: new ConstrainedBox(
             constraints: new BoxConstraints.expand(),
           ),
@@ -56,16 +86,22 @@ class DrawPageState extends State<DrawPage> {
 class MyCustomPainter extends CustomPainter {
   final Offset _start;
   final Offset _end;
+  ui.Image _image;
 
-  MyCustomPainter(this._start, this._end);
+  MyCustomPainter(this._start, this._end, this._image);
 
   @override
   void paint(Canvas canvas, Size size) {
+    canvas.drawImage(_image, new Offset(0.0, 0.0), new Paint());
     if (_end == null) return;
     //print([_start,_end]);
+
     canvas.drawRect(
-        Rect.fromPoints(_start, _end), new Paint()..color = Colors.blue);
-    canvas.drawCircle(_start, 10.0, new Paint()..color = Colors.blue);
+        Rect.fromPoints(_start, _end), new Paint()
+      ..color = Colors.blue
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2);
+    //canvas.drawCircle(_start, 10.0, new Paint()..color = Colors.blue..style = PaintingStyle.stroke);
   }
 
   @override

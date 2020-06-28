@@ -1,6 +1,5 @@
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:img_annotator/painting.dart';
+import 'package:img_annotator/bbox.dart';
 class Fetch_File extends StatefulWidget {
   final Map<String, String> paths;
 
@@ -16,16 +15,11 @@ class _FilePickerState extends State<Fetch_File> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String _fileName;
   String _path;
-  String _extension;
   bool _loadingPath = false;
-  bool _multiPick = false;
-  FileType _pickingType = FileType.any;
-  TextEditingController _controller = new TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _controller.addListener(() => _extension = _controller.text);
 
   }
   @override
@@ -87,7 +81,8 @@ class _FilePickerState extends State<Fetch_File> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
-                                            DrawPage()
+                                        //MyHomePage(imagePath: path)
+                                        DrawPage(imagePath: path)
                                         //DisplayPictureScreen(
                                         //    imagePath: path),
                                       ),
