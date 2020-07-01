@@ -62,22 +62,22 @@ class _DrawPageState extends State<DrawPage> {
             _end = offset;
           });
         },
-        onPointerUp: (PointerUpEvent event) {
-          print("alert");
-          showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: Text("Accept?"),
-                  content: Text("Fix the bbox?"),
-                  actions: [
-                    FlatButton(child: Text("No")),
-                    FlatButton(child: Text("Yes"))
-                  ],
-                );
-              }
-          );
-        },
+//        onPointerUp: (PointerUpEvent event) {
+//
+//          showDialog(
+//              context: context,
+//              builder: (BuildContext context) {
+//                return AlertDialog(
+//                  title: Text("Accept?"),
+//                  content: Text("Fix the bbox?"),
+//                  actions: [
+//                    FlatButton(child: Text("No")),
+//                    FlatButton(child: Text("Yes"))
+//                  ],
+//                );
+//              }
+//          );
+//        },
         child: new CustomPaint(
           key: _paintKey,
           painter: new MyCustomPainter(_start, _end, _image),
@@ -99,13 +99,15 @@ class MyCustomPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    var scale = size.width / _image.width;
+    canvas.scale(scale);
     canvas.drawImage(_image, new Offset(0.0, 0.0), new Paint());
     if (_end == null) return;
-    //print([_start,_end]);
+    print([_start, _end]);
 
     canvas.drawRect(
-        Rect.fromPoints(_start, _end), new Paint()
-      ..color = Colors.blue
+        Rect.fromPoints(_start / scale, _end / scale), new Paint()
+      ..color = Colors.red
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2);
     //canvas.drawCircle(_start, 10.0, new Paint()..color = Colors.blue..style = PaintingStyle.stroke);
