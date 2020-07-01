@@ -20,9 +20,11 @@ class _DrawPageState extends State<DrawPage> {
   Offset _start;
   Offset _end;
   ui.Image _image;
+  List <List <Offset>> _list_rect;
 
   @override
   void initState() {
+    _list_rect = [];
     _loadImage(widget.imagePath);
   }
 
@@ -62,8 +64,9 @@ class _DrawPageState extends State<DrawPage> {
             _end = offset;
           });
         },
-//        onPointerUp: (PointerUpEvent event) {
-//
+        onPointerUp: (PointerUpEvent event) {
+          var x = [_start, _end];
+          _list_rect.add(x);
 //          showDialog(
 //              context: context,
 //              builder: (BuildContext context) {
@@ -77,10 +80,10 @@ class _DrawPageState extends State<DrawPage> {
 //                );
 //              }
 //          );
-//        },
+        },
         child: new CustomPaint(
           key: _paintKey,
-          painter: new MyCustomPainter(_start, _end, _image),
+          painter: new MyCustomPainter(_start, _end, _image, _list_rect),
           child: new ConstrainedBox(
             constraints: new BoxConstraints.expand(),
           ),
@@ -91,28 +94,52 @@ class _DrawPageState extends State<DrawPage> {
 }
 
 class MyCustomPainter extends CustomPainter {
+
   final Offset _start;
   final Offset _end;
+  final List<List <Offset>> list_rect;
   ui.Image _image;
 
-  MyCustomPainter(this._start, this._end, this._image);
+  MyCustomPainter(this._start, this._end, this._image, this.list_rect);
 
   @override
   void paint(Canvas canvas, Size size) {
     var scale = size.width / _image.width;
     canvas.scale(scale);
     canvas.drawImage(_image, new Offset(0.0, 0.0), new Paint());
+    draw_existing_bbox(canvas, scale);
     if (_end == null) return;
-    print([_start, _end]);
+    draw_current_bbox(_start, _end, canvas, scale);
+    //print([_start, _end]);
 
-    canvas.drawRect(
-        Rect.fromPoints(_start / scale, _end / scale), new Paint()
-      ..color = Colors.red
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2);
     //canvas.drawCircle(_start, 10.0, new Paint()..color = Colors.blue..style = PaintingStyle.stroke);
   }
 
+  void draw_existing_bbox(ui.Canvas canvas, double scale) {
+    print(list_rect.length);
+    if (list_rect.length != 0) {
+      for (var i = 0; i < list_rect.length; i++) {
+        canvas.drawRect(
+            Rect.fromPoints(list_rect[i][0] / scale, list_rect[i][1] / scale),
+            new Paint()
+              ..color = Colors.red
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = (2 / scale));
+      }
+//    list_rect.map((i) => canvas.drawRect(
+//        Rect.fromPoints(i[0] / scale, i[1] / scale), new Paint()
+//      ..color = Colors.red
+//      ..style = PaintingStyle.stroke
+//      ..strokeWidth = (2/scale)));
+    }
+  }
+
+  void draw_current_bbox(Offset x, Offset y, ui.Canvas canvas, double scale) {
+    canvas.drawRect(Rect.fromPoints(x / scale, y / scale), new Paint()
+      ..color = Colors.red
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = (2 / scale));
+  }
   @override
   bool shouldRepaint(MyCustomPainter other) => other._end != _end;
 }
