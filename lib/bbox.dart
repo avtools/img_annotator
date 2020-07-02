@@ -98,33 +98,35 @@ class MyCustomPainter extends CustomPainter {
   final Offset _start;
   final Offset _end;
   final List<List <Offset>> list_rect;
+  double scale;
   ui.Image _image;
 
   MyCustomPainter(this._start, this._end, this._image, this.list_rect);
 
   @override
   void paint(Canvas canvas, Size size) {
-    var scale = size.width / _image.width;
-    canvas.scale(scale);
+    this.scale = size.width / _image.width;
+    canvas.scale(this.scale);
     canvas.drawImage(_image, new Offset(0.0, 0.0), new Paint());
-    draw_existing_bbox(canvas, scale);
+    draw_existing_bbox(canvas);
     if (_end == null) return;
-    draw_current_bbox(_start, _end, canvas, scale);
+    draw_current_bbox(_transform(_start), _transform(_end), canvas);
     //print([_start, _end]);
 
     //canvas.drawCircle(_start, 10.0, new Paint()..color = Colors.blue..style = PaintingStyle.stroke);
   }
 
-  void draw_existing_bbox(ui.Canvas canvas, double scale) {
+  void draw_existing_bbox(ui.Canvas canvas) {
     print(list_rect.length);
     if (list_rect.length != 0) {
       for (var i = 0; i < list_rect.length; i++) {
         canvas.drawRect(
-            Rect.fromPoints(list_rect[i][0] / scale, list_rect[i][1] / scale),
+            Rect.fromPoints(
+                _transform(list_rect[i][0]), _transform(list_rect[i][1])),
             new Paint()
               ..color = Colors.red
               ..style = PaintingStyle.stroke
-              ..strokeWidth = (2 / scale));
+              ..strokeWidth = (2 / this.scale));
       }
 //    list_rect.map((i) => canvas.drawRect(
 //        Rect.fromPoints(i[0] / scale, i[1] / scale), new Paint()
@@ -134,11 +136,15 @@ class MyCustomPainter extends CustomPainter {
     }
   }
 
-  void draw_current_bbox(Offset x, Offset y, ui.Canvas canvas, double scale) {
-    canvas.drawRect(Rect.fromPoints(x / scale, y / scale), new Paint()
+  void draw_current_bbox(Offset x, Offset y, ui.Canvas canvas) {
+    canvas.drawRect(Rect.fromPoints(x, y), new Paint()
       ..color = Colors.red
       ..style = PaintingStyle.stroke
       ..strokeWidth = (2 / scale));
+  }
+
+  Offset _transform(Offset x) {
+    return x / scale;
   }
   @override
   bool shouldRepaint(MyCustomPainter other) => other._end != _end;
