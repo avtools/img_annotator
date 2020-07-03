@@ -46,7 +46,7 @@ class _DrawPageState extends State<DrawPage> {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text('CustomPaint example'),
+        title: new Text('Label your image'),
       ),
       body: new Listener(
         onPointerDown: (PointerDownEvent event) {
@@ -89,6 +89,17 @@ class _DrawPageState extends State<DrawPage> {
           ),
         ),
       ),
+        bottomNavigationBar: BottomNavigationBar(
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.tag_faces),
+              title: Text('Tags'),
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.control_point),
+              title: Text('Keypoints'),
+            ),
+          ],)
     );
   }
 }
