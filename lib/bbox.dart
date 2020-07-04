@@ -48,7 +48,17 @@ class _DrawPageState extends State<DrawPage> {
       appBar: new AppBar(
         title: new Text('Label your image'),
       ),
+//  check gesture detector
+//  onTap: (Offset offset, RenderBox getBox, TapDownDetails details) {
+//    double dx;
+//    double dy;
+//    dx = offset.dx * _imageInfo.image.width;
+//    dy = offset.dy * _imageInfo.image.height;
+//    setState(() {
+//    dragEnd(dx, dy);
+//    })
       body: new Listener(
+
         onPointerDown: (PointerDownEvent event) {
           RenderBox referenceBox = _paintKey.currentContext.findRenderObject();
           Offset offset = referenceBox.globalToLocal(event.position);
