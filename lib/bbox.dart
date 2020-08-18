@@ -39,7 +39,7 @@ class _DrawPageState extends State<DrawPage> {
       _end = referenceBox.globalToLocal(details.globalPosition);
     });
   }
-  
+
   void _endPan(DragEndDetails details) {
     var x = [_start, _end];
 
@@ -95,80 +95,12 @@ class _DrawPageState extends State<DrawPage> {
         appBar: new AppBar(
           title: new Text('Label your image'),
         ),
-//  check gesture detector
-//  onTap: (Offset offset, RenderBox getBox, TapDownDetails details) {
-//    double dx;
-//    double dy;
-//    dx = offset.dx * _imageInfo.image.width;
-//    dy = offset.dy * _imageInfo.image.height;
-//    setState(() {
-//    dragEnd(dx, dy);
-//    })
-//
         body:
         new GestureDetector(
 
           onPanStart: _startPan,
           onPanUpdate: _updatePan,
           onPanEnd: _endPan,
-//        new Listener(
-//
-//          onPointerDown: (PointerDownEvent event) {
-//            RenderBox referenceBox =
-//            _paintKey.currentContext.findRenderObject();
-//            Offset offset = referenceBox.globalToLocal(event.position);
-//            setState(() {
-//              _start = offset;
-//              //print(offset);
-//            });
-//          },
-//          onPointerMove: (PointerMoveEvent event) {
-//            RenderBox referenceBox =
-//            _paintKey.currentContext.findRenderObject();
-//            Offset offset = referenceBox.globalToLocal(event.position);
-//            setState(() {
-//              _end = offset;
-//            });
-//          },
-//          onPointerUp: (PointerUpEvent event) {
-//            var x = [_start, _end];
-//
-//            var p_x = (2 * (_end.dx) - 410) / 410;
-//            var p_y = (2 * (_end.dy) - 640) / 640;
-//            //print("x : " + p_x.toString() + "y:" + p_y.toString());
-//            showDialog(
-//              context: context,
-//              barrierDismissible: false,
-//              builder: (BuildContext context) =>
-//                  Align(
-//                    // alignment: Alignment.bottomRight,
-//                      alignment: Alignment(
-//                          (2 * (_end.dx) - 410) / 410,
-//                          (2 * (_end.dy) - 640) / 640),
-//                      child: Row( // A simplified version of dialog.
-//                          children: <Widget>[
-//                            Wrap(
-//                              children: <Widget>[
-//                                FlatButton(
-//                                  child: Icon(Icons.done),
-//                                  onPressed: () {
-//                                    _list_rect.add(x);
-//                                    Navigator.pop(context);
-//                                  },
-//                                ),
-//                                FlatButton(
-//                                    child: Icon(Icons.cancel),
-//                                    onPressed: () {
-//                                      Navigator.of(context).pop();
-//                                    })
-//                              ],
-//                            )
-//                          ])),
-//            );
-//            RenderBox referenceBox =
-//            _paintKey.currentContext.findRenderObject();
-//            //Offset offset = referenceBox.globalToLocal(event.position);
-//          },
           child: new CustomPaint(
             key: _paintKey,
             painter: new MyCustomPainter(_start, _end, _image, _list_rect),
@@ -228,11 +160,6 @@ class MyCustomPainter extends CustomPainter {
               ..style = PaintingStyle.stroke
               ..strokeWidth = (2 / this.scale));
       }
-//    list_rect.map((i) => canvas.drawRect(
-//        Rect.fromPoints(i[0] / scale, i[1] / scale), new Paint()
-//      ..color = Colors.red
-//      ..style = PaintingStyle.stroke
-//      ..strokeWidth = (2/scale)));
     }
   }
 
