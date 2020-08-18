@@ -18,11 +18,11 @@ class _DrawPageState extends State<DrawPage> {
   Offset _start;
   Offset _end;
   ui.Image _image;
-  List<List<Offset>> _list_rect;
+  List<List<Offset>> _listRect;
 
   @override
   void initState() {
-    _list_rect = [];
+    _listRect = [];
     _loadImage(widget.imagePath);
   }
 
@@ -62,7 +62,7 @@ class _DrawPageState extends State<DrawPage> {
                         FlatButton(
                           child: Icon(Icons.done),
                           onPressed: () {
-                            _list_rect.add(x);
+                            _listRect.add(x);
                             Navigator.pop(context);
                           },
                         ),
@@ -77,15 +77,10 @@ class _DrawPageState extends State<DrawPage> {
     );
   }
   _loadImage(String path) async {
-    //ByteData bd = await rootBundle.load("assets/sampleImagees.jpg");
-    //var listimage = File(path).readAsBytesSync();
 
     final Uint8List bytes = File(path).readAsBytesSync();
-
     final ui.Codec codec = await ui.instantiateImageCodec(bytes);
-
     final ui.Image image = (await codec.getNextFrame()).image;
-
     setState(() => _image = image);
   }
 
@@ -103,7 +98,7 @@ class _DrawPageState extends State<DrawPage> {
           onPanEnd: _endPan,
           child: new CustomPaint(
             key: _paintKey,
-            painter: new MyCustomPainter(_start, _end, _image, _list_rect),
+            painter: new MyCustomPainter(_start, _end, _image, _listRect),
             child: new ConstrainedBox(
               constraints: new BoxConstraints.expand(),
             ),
@@ -141,15 +136,12 @@ class MyCustomPainter extends CustomPainter {
     if (_image != null) {
       canvas.drawImage(_image, new Offset(0.0, 0.0), new Paint());
     }
-    draw_existing_bbox(canvas);
+    drawExistingBBox(canvas);
     if (_end == null) return;
-    draw_current_bbox(_transform(_start), _transform(_end), canvas);
-    //print([_start, _end]);
-
-    //canvas.drawCircle(_start, 10.0, new Paint()..color = Colors.blue..style = PaintingStyle.stroke);
+    drawCurrentBBox(_transform(_start), _transform(_end), canvas);
   }
 
-  void draw_existing_bbox(ui.Canvas canvas) {
+  void drawExistingBBox(ui.Canvas canvas) {
     if (list_rect.length != 0) {
       for (var i = 0; i < list_rect.length; i++) {
         canvas.drawRect(
@@ -163,7 +155,7 @@ class MyCustomPainter extends CustomPainter {
     }
   }
 
-  void draw_current_bbox(Offset x, Offset y, ui.Canvas canvas) {
+  void drawCurrentBBox(Offset x, Offset y, ui.Canvas canvas) {
     print(x.toString() + "   " + y.toString());
     canvas.drawRect(
         Rect.fromPoints(x, y),
