@@ -26,6 +26,56 @@ class _DrawPageState extends State<DrawPage> {
     _loadImage(widget.imagePath);
   }
 
+  void _startPan(DragStartDetails details) {
+    RenderBox referenceBox = _paintKey.currentContext.findRenderObject();
+    setState(() {
+      _start = referenceBox.globalToLocal(details.globalPosition);
+    });
+  }
+
+  void _updatePan(DragUpdateDetails details) {
+    RenderBox referenceBox = _paintKey.currentContext.findRenderObject();
+    setState(() {
+      _end = referenceBox.globalToLocal(details.globalPosition);
+    });
+  }
+  
+  void _endPan(DragEndDetails details) {
+    var x = [_start, _end];
+
+    var p_x = (2 * (_end.dx) - 410) / 410;
+    var p_y = (2 * (_end.dy) - 640) / 640;
+    //print("x : " + p_x.toString() + "y:" + p_y.toString());
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) =>
+          Align(
+            // alignment: Alignment.bottomRight,
+              alignment: Alignment(
+                  (2 * (_end.dx) - 410) / 410,
+                  (2 * (_end.dy) - 640) / 640),
+              child: Row( // A simplified version of dialog.
+                  children: <Widget>[
+                    Wrap(
+                      children: <Widget>[
+                        FlatButton(
+                          child: Icon(Icons.done),
+                          onPressed: () {
+                            _list_rect.add(x);
+                            Navigator.pop(context);
+                          },
+                        ),
+                        FlatButton(
+                            child: Icon(Icons.cancel),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            })
+                      ],
+                    )
+                  ])),
+    );
+  }
   _loadImage(String path) async {
     //ByteData bd = await rootBundle.load("assets/sampleImagees.jpg");
     //var listimage = File(path).readAsBytesSync();
@@ -56,64 +106,69 @@ class _DrawPageState extends State<DrawPage> {
 //    })
 //
         body:
-        new Listener(
+        new GestureDetector(
 
-          onPointerDown: (PointerDownEvent event) {
-            RenderBox referenceBox =
-            _paintKey.currentContext.findRenderObject();
-            Offset offset = referenceBox.globalToLocal(event.position);
-            setState(() {
-              _start = offset;
-              //print(offset);
-            });
-          },
-          onPointerMove: (PointerMoveEvent event) {
-            RenderBox referenceBox =
-            _paintKey.currentContext.findRenderObject();
-            Offset offset = referenceBox.globalToLocal(event.position);
-            setState(() {
-              _end = offset;
-            });
-          },
-          onPointerUp: (PointerUpEvent event) {
-            var x = [_start, _end];
-
-            var p_x = (2 * (_end.dx) - 410) / 410;
-            var p_y = (2 * (_end.dy) - 640) / 640;
-            print("x : " + p_x.toString() + "y:" + p_y.toString());
-            showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (BuildContext context) =>
-                  Align(
-                    // alignment: Alignment.bottomRight,
-                      alignment: Alignment(
-                          (2 * (_end.dx) - 410) / 410,
-                          (2 * (_end.dy) - 640) / 640),
-                      child: Row( // A simplified version of dialog.
-                          children: <Widget>[
-                            Wrap(
-                              children: <Widget>[
-                                FlatButton(
-                                  child: Icon(Icons.done),
-                                  onPressed: () {
-                                    _list_rect.add(x);
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                                FlatButton(
-                                    child: Icon(Icons.cancel),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    })
-                              ],
-                            )
-                          ])),
-            );
-            RenderBox referenceBox =
-            _paintKey.currentContext.findRenderObject();
-            //Offset offset = referenceBox.globalToLocal(event.position);
-          },
+          onPanStart: _startPan,
+          onPanUpdate: _updatePan,
+          onPanEnd: _endPan,
+//        new Listener(
+//
+//          onPointerDown: (PointerDownEvent event) {
+//            RenderBox referenceBox =
+//            _paintKey.currentContext.findRenderObject();
+//            Offset offset = referenceBox.globalToLocal(event.position);
+//            setState(() {
+//              _start = offset;
+//              //print(offset);
+//            });
+//          },
+//          onPointerMove: (PointerMoveEvent event) {
+//            RenderBox referenceBox =
+//            _paintKey.currentContext.findRenderObject();
+//            Offset offset = referenceBox.globalToLocal(event.position);
+//            setState(() {
+//              _end = offset;
+//            });
+//          },
+//          onPointerUp: (PointerUpEvent event) {
+//            var x = [_start, _end];
+//
+//            var p_x = (2 * (_end.dx) - 410) / 410;
+//            var p_y = (2 * (_end.dy) - 640) / 640;
+//            //print("x : " + p_x.toString() + "y:" + p_y.toString());
+//            showDialog(
+//              context: context,
+//              barrierDismissible: false,
+//              builder: (BuildContext context) =>
+//                  Align(
+//                    // alignment: Alignment.bottomRight,
+//                      alignment: Alignment(
+//                          (2 * (_end.dx) - 410) / 410,
+//                          (2 * (_end.dy) - 640) / 640),
+//                      child: Row( // A simplified version of dialog.
+//                          children: <Widget>[
+//                            Wrap(
+//                              children: <Widget>[
+//                                FlatButton(
+//                                  child: Icon(Icons.done),
+//                                  onPressed: () {
+//                                    _list_rect.add(x);
+//                                    Navigator.pop(context);
+//                                  },
+//                                ),
+//                                FlatButton(
+//                                    child: Icon(Icons.cancel),
+//                                    onPressed: () {
+//                                      Navigator.of(context).pop();
+//                                    })
+//                              ],
+//                            )
+//                          ])),
+//            );
+//            RenderBox referenceBox =
+//            _paintKey.currentContext.findRenderObject();
+//            //Offset offset = referenceBox.globalToLocal(event.position);
+//          },
           child: new CustomPaint(
             key: _paintKey,
             painter: new MyCustomPainter(_start, _end, _image, _list_rect),
@@ -182,6 +237,7 @@ class MyCustomPainter extends CustomPainter {
   }
 
   void draw_current_bbox(Offset x, Offset y, ui.Canvas canvas) {
+    print(x.toString() + "   " + y.toString());
     canvas.drawRect(
         Rect.fromPoints(x, y),
         new Paint()
