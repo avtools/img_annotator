@@ -41,7 +41,7 @@ class _DrawPageState extends State<DrawPage> {
   }
 
   void _endPan(DragEndDetails details) {
-    var x = [_start, _end];
+    var x = [_start, _end, (_start + _end) / 2];
 
     var p_x = (2 * (_end.dx) - 410) / 410;
     var p_y = (2 * (_end.dy) - 640) / 640;
@@ -62,13 +62,18 @@ class _DrawPageState extends State<DrawPage> {
                         FlatButton(
                           child: Icon(Icons.done),
                           onPressed: () {
-                            _listRect.add(x);
+                            setState(() {
+                              _listRect.add(x);
+                            });
                             Navigator.pop(context);
                           },
                         ),
                         FlatButton(
                             child: Icon(Icons.cancel),
                             onPressed: () {
+                              setState(() {
+                                _end = null;
+                              });
                               Navigator.of(context).pop();
                             })
                       ],
@@ -76,6 +81,40 @@ class _DrawPageState extends State<DrawPage> {
                   ])),
     );
   }
+
+  void _longPress(LongPressStartDetails details) {
+    RenderBox referenceBox = _paintKey.currentContext.findRenderObject();
+
+    var x = referenceBox.globalToLocal(details.globalPosition);
+    print(x);
+    var index = _findClosestBBox(x);
+    setState(() {
+      _start = _listRect[index][0];
+      _end = null;
+    });
+    _listRect.removeAt(index);
+  }
+
+  void _longPressMove(LongPressMoveUpdateDetails details) {
+    RenderBox referenceBox = _paintKey.currentContext.findRenderObject();
+
+    _end = referenceBox.globalToLocal(details.globalPosition);
+  }
+
+  int _findClosestBBox(Offset x) {
+    var min = (_listRect[0][2] - x).distanceSquared;
+    var minimum = 0;
+    for (int i = 0; i < _listRect.length; i++) {
+      var temp = (_listRect[i][2] - x).distanceSquared;
+      if (min > temp) {
+        min = temp;
+        minimum = i;
+      }
+    }
+    return minimum;
+  }
+
+
   _loadImage(String path) async {
 
     final Uint8List bytes = File(path).readAsBytesSync();
@@ -96,6 +135,8 @@ class _DrawPageState extends State<DrawPage> {
           onPanStart: _startPan,
           onPanUpdate: _updatePan,
           onPanEnd: _endPan,
+          onLongPressStart: _longPress,
+          onLongPressMoveUpdate: _longPressMove,
           child: new CustomPaint(
             key: _paintKey,
             painter: new MyCustomPainter(_start, _end, _image, _listRect),
@@ -107,13 +148,23 @@ class _DrawPageState extends State<DrawPage> {
         bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
+              icon: Icon(Icons.arrow_back),
+              title: Text('Previous'),
+            ),
+            BottomNavigationBarItem(
               icon: Icon(Icons.tag_faces),
               title: Text('Tags'),
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.control_point),
-              title: Text('Keypoints'),
+              icon: Icon(Icons.arrow_forward),
+              title: Text('Next'),
             ),
+
+//            BottomNavigationBarItem(
+//              icon: Icon(Icons.control_point),
+//              title: Text('Keypoints'),
+//            ),
+
           ],
         ));
   }
@@ -122,12 +173,12 @@ class _DrawPageState extends State<DrawPage> {
 class MyCustomPainter extends CustomPainter {
   final Offset _start;
   final Offset _end;
-  final List<List<Offset>> list_rect;
+  final List<List<Offset>> listRect;
   double scale;
   ui.Image _image;
 
 
-  MyCustomPainter(this._start, this._end, this._image, this.list_rect) :super();
+  MyCustomPainter(this._start, this._end, this._image, this.listRect) :super();
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -142,11 +193,11 @@ class MyCustomPainter extends CustomPainter {
   }
 
   void drawExistingBBox(ui.Canvas canvas) {
-    if (list_rect.length != 0) {
-      for (var i = 0; i < list_rect.length; i++) {
+    if (listRect.length != 0) {
+      for (var i = 0; i < listRect.length; i++) {
         canvas.drawRect(
             Rect.fromPoints(
-                _transform(list_rect[i][0]), _transform(list_rect[i][1])),
+                _transform(listRect[i][0]), _transform(listRect[i][1])),
             new Paint()
               ..color = Colors.red
               ..style = PaintingStyle.stroke
@@ -156,7 +207,7 @@ class MyCustomPainter extends CustomPainter {
   }
 
   void drawCurrentBBox(Offset x, Offset y, ui.Canvas canvas) {
-    print(x.toString() + "   " + y.toString());
+    //print(x.toString() + "   " + y.toString());
     canvas.drawRect(
         Rect.fromPoints(x, y),
         new Paint()
