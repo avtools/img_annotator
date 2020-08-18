@@ -7,9 +7,7 @@ import 'package:flutter/material.dart';
 class DrawPage extends StatefulWidget {
   final String imagePath;
 
-  const DrawPage({Key key,
-    @required this.imagePath
-  }) : super(key: key);
+  const DrawPage({Key key, @required this.imagePath}) : super(key: key);
 
   @override
   _DrawPageState createState() => new _DrawPageState();
@@ -20,7 +18,7 @@ class _DrawPageState extends State<DrawPage> {
   Offset _start;
   Offset _end;
   ui.Image _image;
-  List <List <Offset>> _list_rect;
+  List<List<Offset>> _list_rect;
 
   @override
   void initState() {
@@ -41,13 +39,12 @@ class _DrawPageState extends State<DrawPage> {
     setState(() => _image = image);
   }
 
-
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: new AppBar(
-        title: new Text('Label your image'),
-      ),
+        appBar: new AppBar(
+          title: new Text('Label your image'),
+        ),
 //  check gesture detector
 //  onTap: (Offset offset, RenderBox getBox, TapDownDetails details) {
 //    double dx;
@@ -57,48 +54,74 @@ class _DrawPageState extends State<DrawPage> {
 //    setState(() {
 //    dragEnd(dx, dy);
 //    })
-      body: new Listener(
+//
+        body:
+        new Listener(
 
-        onPointerDown: (PointerDownEvent event) {
-          RenderBox referenceBox = _paintKey.currentContext.findRenderObject();
-          Offset offset = referenceBox.globalToLocal(event.position);
-          setState(() {
-            _start = offset;
-            //print(offset);
-          });
-        },
-        onPointerMove: (PointerMoveEvent event) {
-          RenderBox referenceBox = _paintKey.currentContext.findRenderObject();
-          Offset offset = referenceBox.globalToLocal(event.position);
-          setState(() {
-            _end = offset;
-          });
-        },
-        onPointerUp: (PointerUpEvent event) {
-          var x = [_start, _end];
-          _list_rect.add(x);
-//          showDialog(
-//              context: context,
-//              builder: (BuildContext context) {
-//                return AlertDialog(
-//                  title: Text("Accept?"),
-//                  content: Text("Fix the bbox?"),
-//                  actions: [
-//                    FlatButton(child: Text("No")),
-//                    FlatButton(child: Text("Yes"))
-//                  ],
-//                );
-//              }
-//          );
-        },
-        child: new CustomPaint(
-          key: _paintKey,
-          painter: new MyCustomPainter(_start, _end, _image, _list_rect),
-          child: new ConstrainedBox(
-            constraints: new BoxConstraints.expand(),
+          onPointerDown: (PointerDownEvent event) {
+            RenderBox referenceBox =
+            _paintKey.currentContext.findRenderObject();
+            Offset offset = referenceBox.globalToLocal(event.position);
+            setState(() {
+              _start = offset;
+              //print(offset);
+            });
+          },
+          onPointerMove: (PointerMoveEvent event) {
+            RenderBox referenceBox =
+            _paintKey.currentContext.findRenderObject();
+            Offset offset = referenceBox.globalToLocal(event.position);
+            setState(() {
+              _end = offset;
+            });
+          },
+          onPointerUp: (PointerUpEvent event) {
+            var x = [_start, _end];
+
+            var p_x = (2 * (_end.dx) - 410) / 410;
+            var p_y = (2 * (_end.dy) - 640) / 640;
+            print("x : " + p_x.toString() + "y:" + p_y.toString());
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (BuildContext context) =>
+                  Align(
+                    // alignment: Alignment.bottomRight,
+                      alignment: Alignment(
+                          (2 * (_end.dx) - 410) / 410,
+                          (2 * (_end.dy) - 640) / 640),
+                      child: Row( // A simplified version of dialog.
+                          children: <Widget>[
+                            Wrap(
+                              children: <Widget>[
+                                FlatButton(
+                                  child: Icon(Icons.done),
+                                  onPressed: () {
+                                    _list_rect.add(x);
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                                FlatButton(
+                                    child: Icon(Icons.cancel),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    })
+                              ],
+                            )
+                          ])),
+            );
+            RenderBox referenceBox =
+            _paintKey.currentContext.findRenderObject();
+            //Offset offset = referenceBox.globalToLocal(event.position);
+          },
+          child: new CustomPaint(
+            key: _paintKey,
+            painter: new MyCustomPainter(_start, _end, _image, _list_rect),
+            child: new ConstrainedBox(
+              constraints: new BoxConstraints.expand(),
+            ),
           ),
         ),
-      ),
         bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
@@ -109,26 +132,28 @@ class _DrawPageState extends State<DrawPage> {
               icon: Icon(Icons.control_point),
               title: Text('Keypoints'),
             ),
-          ],)
-    );
+          ],
+        ));
   }
 }
 
 class MyCustomPainter extends CustomPainter {
-
   final Offset _start;
   final Offset _end;
-  final List<List <Offset>> list_rect;
+  final List<List<Offset>> list_rect;
   double scale;
   ui.Image _image;
 
-  MyCustomPainter(this._start, this._end, this._image, this.list_rect);
+
+  MyCustomPainter(this._start, this._end, this._image, this.list_rect) :super();
 
   @override
   void paint(Canvas canvas, Size size) {
     this.scale = size.width / _image.width;
     canvas.scale(this.scale);
-    canvas.drawImage(_image, new Offset(0.0, 0.0), new Paint());
+    if (_image != null) {
+      canvas.drawImage(_image, new Offset(0.0, 0.0), new Paint());
+    }
     draw_existing_bbox(canvas);
     if (_end == null) return;
     draw_current_bbox(_transform(_start), _transform(_end), canvas);
@@ -138,7 +163,6 @@ class MyCustomPainter extends CustomPainter {
   }
 
   void draw_existing_bbox(ui.Canvas canvas) {
-    print(list_rect.length);
     if (list_rect.length != 0) {
       for (var i = 0; i < list_rect.length; i++) {
         canvas.drawRect(
@@ -158,15 +182,18 @@ class MyCustomPainter extends CustomPainter {
   }
 
   void draw_current_bbox(Offset x, Offset y, ui.Canvas canvas) {
-    canvas.drawRect(Rect.fromPoints(x, y), new Paint()
-      ..color = Colors.red
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = (2 / scale));
+    canvas.drawRect(
+        Rect.fromPoints(x, y),
+        new Paint()
+          ..color = Colors.red
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = (2 / scale));
   }
 
   Offset _transform(Offset x) {
     return x / scale;
   }
+
   @override
-  bool shouldRepaint(MyCustomPainter other) => other._end != _end;
+  bool shouldRepaint(MyCustomPainter other) => true; //other._end != _end;
 }
