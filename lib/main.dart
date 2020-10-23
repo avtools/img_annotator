@@ -8,8 +8,8 @@ import 'package:img_annotator/capture.dart';
 import 'package:img_annotator/file_manager.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import 'file_manager.dart';
 import 'utils.dart';
-
 Future<void> main() async {
   // Ensure that plugin services are initialized so that `availableCameras()`
   // can be called before `runApp()`
@@ -42,8 +42,11 @@ Future<void> main() async {
 }
 
 class HomePage extends StatefulWidget {
-  HomePage({CameraDescription camera}) : this.this_camera = camera;
+
   final CameraDescription this_camera;
+
+  HomePage({CameraDescription camera}) : this.this_camera = camera;
+
 
   @override
   HomePageState createState() => new HomePageState();

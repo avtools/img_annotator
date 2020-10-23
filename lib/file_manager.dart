@@ -1,5 +1,46 @@
+import 'dart:async';
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:img_annotator/bbox.dart';
+import 'package:path_provider/path_provider.dart';
+
+class TmpFile {
+  //for persisting data
+  Future<String> get _localPath async {
+    final directory = await getApplicationDocumentsDirectory();
+
+    return directory.path;
+  }
+
+  Future<File> get _localFile async {
+    final path = await _localPath;
+    return File('$path/store.txt');
+  }
+
+  Future<int> readCounter() async {
+    try {
+      final file = await _localFile;
+
+      // Read the file
+      String contents = await file.readAsString();
+
+      return int.parse(contents);
+    } catch (e) {
+      // If encountering an error, return 0
+      return 0;
+    }
+  }
+
+  Future<File> writeCounter(int counter) async {
+    final file = await _localFile;
+
+    // Write the file
+    return file.writeAsString('$counter');
+  }
+}
+
 class Fetch_File extends StatefulWidget {
   final Map<String, String> paths;
 
@@ -20,8 +61,8 @@ class _FilePickerState extends State<Fetch_File> {
   @override
   void initState() {
     super.initState();
-
   }
+
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
@@ -80,9 +121,9 @@ class _FilePickerState extends State<Fetch_File> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) =>
-                                        //MyHomePage(imagePath: path)
-                                        DrawPage(imagePath: path)
+                                          builder: (context) =>
+                                          //MyHomePage(imagePath: path)
+                                          DrawPage(imagePath: path)
                                         //DisplayPictureScreen(
                                         //    imagePath: path),
                                       ),
