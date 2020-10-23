@@ -54,11 +54,12 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
   Map<String, String> _paths = null;
-
+  TmpFile tempFile = TmpFile();
   void openFileExplorer() async {
     try {
       _paths = await FilePicker.getMultiFilePath(
           type: FileType.image);
+      this.tempFile.writePath(_paths);
       print(_paths);
     } on PlatformException catch (e) {
       print("Unsupported operation" + e.toString());
@@ -93,7 +94,7 @@ class HomePageState extends State<HomePage> {
               context,
               MaterialPageRoute(
                 builder: (context) =>
-                    Fetch_File(paths: _paths),
+                    Fetch_File(paths: _paths, tempfile: tempFile),
               ),
             );
           })

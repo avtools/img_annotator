@@ -16,36 +16,39 @@ class TmpFile {
 
   Future<File> get _localFile async {
     final path = await _localPath;
+    print(path);
     return File('$path/store.txt');
   }
 
-  Future<int> readCounter() async {
+  Future<String> readPath() async {
     try {
       final file = await _localFile;
 
       // Read the file
       String contents = await file.readAsString();
 
-      return int.parse(contents);
+      return contents;
     } catch (e) {
       // If encountering an error, return 0
-      return 0;
+      print("error");
+      return "lol";
     }
   }
 
-  Future<File> writeCounter(int counter) async {
+  Future<File> writePath(Map<String, String> path) async {
     final file = await _localFile;
 
     // Write the file
-    return file.writeAsString('$counter');
+    return file.writeAsString('$path', mode: FileMode.append);
   }
 }
 
 class Fetch_File extends StatefulWidget {
   final Map<String, String> paths;
-
+  final TmpFile tempfile;
   const Fetch_File({Key key,
-    @required this.paths
+    @required this.paths,
+    this.tempfile
   }) : super(key: key);
 
   @override
@@ -111,6 +114,8 @@ class _FilePickerState extends State<Fetch_File> {
                                     ? widget.paths.values.toList()[index]
                                     .toString()
                                     : _path;
+                                widget.tempfile.readPath().then((
+                                    value) => path);
 
                                 return new ListTile(
                                   title: new Text(
