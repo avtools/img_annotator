@@ -6,40 +6,46 @@ import 'package:flutter/material.dart';
 import 'package:img_annotator/bbox.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'persistance.dart';
+
 class TmpFile {
   //for persisting data
+  PictureBook labels;
+
+  TmpFile() : labels = PictureBook();
+
   Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
-
     return directory.path;
   }
 
   Future<File> get _localFile async {
     final path = await _localPath;
-    print(path);
     return File('$path/store.txt');
   }
 
   Future<String> readPath() async {
     try {
       final file = await _localFile;
-
       // Read the file
       String contents = await file.readAsString();
-
       return contents;
     } catch (e) {
       // If encountering an error, return 0
-      print("error");
-      return "lol";
+      return "";
     }
   }
 
   Future<File> writePath(Map<String, String> path) async {
     final file = await _localFile;
-
+    for (MapEntry e in path.entries) {
+      Picture temp = Picture(filename: e.key, filepath: e.value);
+      this.labels.add(temp);
+    }
     // Write the file
-    return file.writeAsString('$path', mode: FileMode.append);
+    var x = this.labels.toJson();
+
+    return file.writeAsString(x.toString(), mode: FileMode.append);
   }
 }
 
