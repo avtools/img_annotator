@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -21,7 +22,7 @@ class TmpFile {
 
   Future<File> get _localFile async {
     final path = await _localPath;
-    return File('$path/store.txt');
+    return File('$path/store.json');
   }
 
   Future<String> readPath() async {
@@ -42,10 +43,7 @@ class TmpFile {
       Picture temp = Picture(filename: e.key, filepath: e.value);
       this.labels.add(temp);
     }
-    // Write the file
-    var x = this.labels.toJson();
-
-    return file.writeAsString(x.toString(), mode: FileMode.append);
+    return file.writeAsString(json.encode(this.labels), mode: FileMode.append);
   }
 }
 
