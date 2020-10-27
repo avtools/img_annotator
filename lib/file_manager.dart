@@ -13,7 +13,11 @@ class TmpFile {
   //for persisting data
   PictureBook labels;
 
-  TmpFile() : labels = PictureBook();
+  TmpFile() {
+    this.readPath();
+  }
+
+  //: labels = PictureBook();
 
   Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
@@ -25,22 +29,27 @@ class TmpFile {
     return File('$path/store.json');
   }
 
-  Future<String> readPath() async {
+  Future<bool> readPath() async {
     try {
       final file = await _localFile;
       // Read the file
       String contents = await file.readAsString();
-      return contents;
-    } catch (e) {
-      // If encountering an error, return 0
-      return "";
+      this.labels = PictureBook.fromJson(json.decode(contents));
+      //return true;
     }
+    catch (e) {
+      this.labels = PictureBook();
+    }
+    //this.labels = PictureBook();
+      // If encountering an error, return 0
+    return false;
+
   }
 
   Future<File> writePath(Map<String, String> path) async {
     final file = await _localFile;
     for (MapEntry e in path.entries) {
-      Picture temp = Picture(filename: e.key, filepath: e.value);
+      Picture temp = Picture(e.key, e.value);
       this.labels.add(temp);
     }
     return file.writeAsString(json.encode(this.labels), mode: FileMode.append);

@@ -22,7 +22,11 @@ class Picture {
   String filepath;
   List<Tag> tags;
 
-  Picture({this.filename, this.filepath});
+  Picture(filename, filepath) {
+    this.filepath = filepath;
+    this.filename = filename;
+    this.tags = List<Tag>();
+  }
 
   factory Picture.fromJson(Map<String, dynamic> json) =>
       _$PictureFromJson(json);

@@ -55,6 +55,8 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
   Map<String, String> _paths = null;
   TmpFile tempFile = TmpFile();
+
+
   void openFileExplorer() async {
     try {
       _paths = await FilePicker.getMultiFilePath(
@@ -65,40 +67,108 @@ class HomePageState extends State<HomePage> {
       print("Unsupported operation" + e.toString());
     }
   }
+
+  Future<String> _calculation = Future < String
+
+  >
+
+      .
+
+  delayed
+
+  (
+
+  Duration
+
+  (
+
+  seconds
+
+      :
+
+  2),
+  () => 'Data Loaded',
+
+  );
+
   @override
   Widget build(BuildContext context) {
     return Material(
       color: Colors.grey[950],
       child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [ Column(
 
-        mainAxisAlignment: MainAxisAlignment.center,
-        //crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          ClassicButton(Icons.camera, "Camera", () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    TakePictureScreen(camera: widget.this_camera),
-              ),
-            );
-          }),
-          SizedBox(height: 20),
-          ClassicButton(Icons.folder_shared, "Export from", () {
-            openFileExplorer();
-            //print(_paths);
-          }),
-          SizedBox(height: 20),
-          ClassicButton(Icons.label, "Labelling", () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    Fetch_File(paths: _paths, tempfile: tempFile),
-              ),
-            );
-          })
-        ],
+            mainAxisAlignment: MainAxisAlignment.center,
+            //crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              ClassicButton(Icons.camera, "Camera", () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        TakePictureScreen(camera: widget.this_camera),
+                  ),
+                );
+              }),
+              SizedBox(height: 20),
+              ClassicButton(Icons.folder_shared, "Export from", () {
+                openFileExplorer();
+                //print(_paths);
+              }),
+              SizedBox(height: 20),
+              ClassicButton(Icons.label, "Labelling", () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        Fetch_File(paths: _paths, tempfile: tempFile),
+                  ),
+                );
+              })
+            ],
+          ),
+          FutureBuilder<String>(
+            future: _calculation,
+            // a previously-obtained Future<String> or null
+            builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+              List<Widget> children;
+              if (snapshot.hasData) {
+                children = <Widget>[
+                  Icon(
+                    Icons.check_circle_outline,
+                    color: Colors.green,
+                    size: 60,
+                  ),
+                ];
+              } else if (snapshot.hasError) {
+                children = <Widget>[
+                  Icon(
+                    Icons.error_outline,
+                    color: Colors.red,
+                    size: 60,
+                  ),
+                ];
+              } else {
+                children = <Widget>[
+                  SizedBox(
+                    child: CircularProgressIndicator(),
+                    width: 60,
+                    height: 60,
+                  ),
+                ];
+              }
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: children,
+                ),
+              );
+            },
+          ),
+
+          ]
       ),
     );
   }
