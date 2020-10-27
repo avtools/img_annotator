@@ -68,29 +68,6 @@ class HomePageState extends State<HomePage> {
     }
   }
 
-  Future<String> _calculation = Future < String
-
-  >
-
-      .
-
-  delayed
-
-  (
-
-  Duration
-
-  (
-
-  seconds
-
-      :
-
-  2),
-  () => 'Data Loaded',
-
-  );
-
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -98,7 +75,6 @@ class HomePageState extends State<HomePage> {
       child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [ Column(
-
             mainAxisAlignment: MainAxisAlignment.center,
             //crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -122,52 +98,12 @@ class HomePageState extends State<HomePage> {
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        Fetch_File(paths: _paths, tempfile: tempFile),
+                        Fetch_File(tempfile: tempFile),
                   ),
                 );
               })
             ],
           ),
-          FutureBuilder<String>(
-            future: _calculation,
-            // a previously-obtained Future<String> or null
-            builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-              List<Widget> children;
-              if (snapshot.hasData) {
-                children = <Widget>[
-                  Icon(
-                    Icons.check_circle_outline,
-                    color: Colors.green,
-                    size: 60,
-                  ),
-                ];
-              } else if (snapshot.hasError) {
-                children = <Widget>[
-                  Icon(
-                    Icons.error_outline,
-                    color: Colors.red,
-                    size: 60,
-                  ),
-                ];
-              } else {
-                children = <Widget>[
-                  SizedBox(
-                    child: CircularProgressIndicator(),
-                    width: 60,
-                    height: 60,
-                  ),
-                ];
-              }
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: children,
-                ),
-              );
-            },
-          ),
-
           ]
       ),
     );

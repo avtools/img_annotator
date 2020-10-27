@@ -37,8 +37,12 @@ class TmpFile {
       this.labels = PictureBook.fromJson(json.decode(contents));
       //return true;
     }
-    catch (e) {
+    on FileSystemException catch (e) {
+      //when there is no file
       this.labels = PictureBook();
+    }
+    catch (e) {
+      print(e);
     }
     //this.labels = PictureBook();
       // If encountering an error, return 0
@@ -52,15 +56,15 @@ class TmpFile {
       Picture temp = Picture(e.key, e.value);
       this.labels.add(temp);
     }
-    return file.writeAsString(json.encode(this.labels), mode: FileMode.append);
+    return file.writeAsString(json.encode(this.labels));
   }
 }
 
 class Fetch_File extends StatefulWidget {
-  final Map<String, String> paths;
+  Map<String, String> paths;
   final TmpFile tempfile;
-  const Fetch_File({Key key,
-    @required this.paths,
+
+  Fetch_File({Key key,
     this.tempfile
   }) : super(key: key);
 
@@ -77,6 +81,12 @@ class _FilePickerState extends State<Fetch_File> {
   @override
   void initState() {
     super.initState();
+    widget.tempfile.readPath();
+    //widget.paths = { for (var v in widget.tempfile.labels.pictures) v.filename: v.filepath };
+    widget.paths = Map.fromIterable(
+        widget.tempfile.labels.pictures, key: (v) => v.filename,
+        value: (v) => v.filepath);
+
   }
 
   @override
@@ -123,13 +133,14 @@ class _FilePickerState extends State<Fetch_File> {
                                     (isMultiPath
                                         ? widget.paths.keys.toList()[index]
                                         : _fileName ?? '...');
-                                final path = isMultiPath
-                                    ? widget.paths.values.toList()[index]
-                                    .toString()
-                                    : _path;
-                                widget.tempfile.readPath().then((
-                                    value) => path);
+                                //final path = isMultiPath
+                                //    ? widget.paths.values.toList()[index]
+                                //   .toString()
+                                //    : _path;
 
+                                final path = widget.tempfile.labels
+                                    .pictures[index].filepath;
+                                print(path);
                                 return new ListTile(
                                   title: new Text(
                                     name,
