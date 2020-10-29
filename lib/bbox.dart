@@ -4,10 +4,15 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 
+import 'file_manager.dart';
+import 'persistance.dart';
 class DrawPage extends StatefulWidget {
   final String imagePath;
+  final TmpFile tempfile;
+  final int index;
 
-  const DrawPage({Key key, @required this.imagePath}) : super(key: key);
+  const DrawPage({Key key, this.index, @required this.imagePath, this.tempfile})
+      : super(key: key);
 
   @override
   _DrawPageState createState() => new _DrawPageState();
@@ -24,6 +29,14 @@ class _DrawPageState extends State<DrawPage> {
   void initState() {
     _listRect = [];
     _loadImage(widget.imagePath);
+  }
+
+  Location offsets_to_location(Offset start, Offset end) {
+    double x = (start.dx + end.dx) * 0.5;
+    double y = (start.dy + end.dy) * 0.5;
+    double w = (end.dx - start.dx);
+    double h = end.dy - start.dy;
+    return Location(x, y, w, h);
   }
 
   void _startPan(DragStartDetails details) {
@@ -66,6 +79,9 @@ class _DrawPageState extends State<DrawPage> {
                               _listRect.add(x);
                             });
                             Navigator.pop(context);
+
+                            widget.tempfile.labels.pictures[widget.index].tags
+                                .add(this.offsets_to_location(_start, _end));
                           },
                         ),
                         FlatButton(

@@ -152,7 +152,9 @@ class _FilePickerState extends State<Fetch_File> {
                                       MaterialPageRoute(
                                           builder: (context) =>
                                           //MyHomePage(imagePath: path)
-                                          DrawPage(imagePath: path)
+                                          DrawPage(index: index,
+                                              imagePath: path,
+                                              tempfile: widget.tempfile)
                                         //DisplayPictureScreen(
                                         //    imagePath: path),
                                       ),

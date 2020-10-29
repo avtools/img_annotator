@@ -48,9 +48,15 @@ class Tag {
 
 @JsonSerializable(nullable: false)
 class Location {
-  double w, h, x, y;
+//  Offset start,end;
+  double x, y, w, h;
 
-  Location();
+  Location(x, y, w, h) {
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+  }
 
   factory Location.fromJson(Map<String, dynamic> json) =>
       _$LocationFromJson(json);
