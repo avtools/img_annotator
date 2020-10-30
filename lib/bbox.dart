@@ -22,12 +22,16 @@ class _DrawPageState extends State<DrawPage> {
   GlobalKey _paintKey = new GlobalKey();
   Offset _start;
   Offset _end;
+  currentTag current;
   ui.Image _image;
   List<List<Offset>> _listRect;
+  List<DropdownChoices> dropdownChoices;
 
   @override
   void initState() {
+    widget.tempfile.readPath();
     _listRect = [];
+    current = currentTag(current: "default", picker: Colors.blue);
     _loadImage(widget.imagePath);
   }
 
@@ -80,8 +84,8 @@ class _DrawPageState extends State<DrawPage> {
                             });
                             Navigator.pop(context);
 
-                            widget.tempfile.labels.pictures[widget.index].tags
-                                .add(this.offsets_to_location(_start, _end));
+//                            widget.tempfile.labels.pictures[widget.index].tags
+//                                .add(this.offsets_to_location(_start, _end));
                           },
                         ),
                         FlatButton(
@@ -139,11 +143,94 @@ class _DrawPageState extends State<DrawPage> {
     setState(() => _image = image);
   }
 
+  List<DropdownChoices> userdropdownchoices = <DropdownChoices>[
+    DropdownChoices(title: 'Add new', color: Colors.blue),
+  ];
+
+  void onTabTapped(int Index) {
+    print(Index);
+  }
+
+  void addTag(value) {
+    DropdownChoices newtag = DropdownChoices(title: value, color: Colors.amber);
+    userdropdownchoices.add(newtag);
+  }
+
+  void setCurrent(DropdownChoices) {
+    print(DropdownChoices.title);
+    setState(() {
+      current.current = DropdownChoices.title;
+      current.picker = DropdownChoices.color;
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
         appBar: new AppBar(
-          title: new Text('Label your image'),
+          title: RichText(
+            text: TextSpan(
+                text: widget.tempfile.labels.pictures[widget.index].filename,
+                //+ title,
+                style: TextStyle(
+                  fontSize: 15.0,
+                  color: Colors.white,
+                ),
+                children: [
+                  TextSpan(text: '\n'),
+                  TextSpan(
+                    text: (widget.index + 1).toString() + "/" +
+                        widget.tempfile.labels.pictures.length.toString(),
+                    style: TextStyle(
+                      fontSize: 10.0,
+                      color: Colors.white,
+                    ),
+                  ),
+                ]),
+            textAlign: TextAlign.center,
+          ),
+          centerTitle: true,
+          actions: <Widget>[
+            PopupMenuButton<DropdownChoices>(
+              itemBuilder: (BuildContext context) {
+                return userdropdownchoices.map((DropdownChoices choice) {
+                  if (choice.title == 'Add new') {
+                    return PopupMenuItem<DropdownChoices>(
+                      value: choice,
+                      child: TextField(decoration: InputDecoration(
+                          prefixIcon: Icon(Icons.add_circle),
+                          labelText: "Add Tag",
+                          border: InputBorder.none
+                      ),
+                        onSubmitted: addTag,
+                      ),
+                    );
+                  }
+                  else {
+                    return PopupMenuItem<DropdownChoices>(
+                        value: choice,
+                        child: Container(
+                            color: this.current == choice.title
+                                ? Colors.blue
+                                : Colors.white,
+                            alignment: Alignment.center,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 50.0),
+                            child: Row(
+                                children: <Widget>[
+                                  Icon(Icons.label, color: choice.color,), Text(
+                                    choice.title,
+                                    style: new TextStyle(color: Colors.black),
+                                  )
+                                ]
+                            )
+                        )
+                    );
+                  }
+                }).toList();
+              },
+              onSelected: setCurrent,
+            ),
+          ],
         ),
         body:
         new GestureDetector(
@@ -155,13 +242,15 @@ class _DrawPageState extends State<DrawPage> {
           onLongPressMoveUpdate: _longPressMove,
           child: new CustomPaint(
             key: _paintKey,
-            painter: new MyCustomPainter(_start, _end, _image, _listRect),
+            painter: new MyCustomPainter(
+                _start, _end, _image, _listRect, current),
             child: new ConstrainedBox(
               constraints: new BoxConstraints.expand(),
             ),
           ),
         ),
         bottomNavigationBar: BottomNavigationBar(
+          onTap: onTabTapped,
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
               icon: Icon(Icons.arrow_back),
@@ -169,11 +258,12 @@ class _DrawPageState extends State<DrawPage> {
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.tag_faces),
-              title: Text('Tags'),
+              title: Text("current Tag"),
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.arrow_forward),
               title: Text('Next'),
+
             ),
 
 //            BottomNavigationBarItem(
@@ -191,10 +281,12 @@ class MyCustomPainter extends CustomPainter {
   final Offset _end;
   final List<List<Offset>> listRect;
   double scale;
+  currentTag current;
   ui.Image _image;
 
 
-  MyCustomPainter(this._start, this._end, this._image, this.listRect) :super();
+  MyCustomPainter(this._start, this._end, this._image, this.listRect,
+      this.current) :super();
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -215,7 +307,7 @@ class MyCustomPainter extends CustomPainter {
             Rect.fromPoints(
                 _transform(listRect[i][0]), _transform(listRect[i][1])),
             new Paint()
-              ..color = Colors.red
+              ..color = current.picker
               ..style = PaintingStyle.stroke
               ..strokeWidth = (2 / this.scale));
       }
@@ -227,7 +319,7 @@ class MyCustomPainter extends CustomPainter {
     canvas.drawRect(
         Rect.fromPoints(x, y),
         new Paint()
-          ..color = Colors.red
+          ..color = current.picker
           ..style = PaintingStyle.stroke
           ..strokeWidth = (2 / scale));
   }
@@ -238,4 +330,19 @@ class MyCustomPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(MyCustomPainter other) => true; //other._end != _end;
+}
+
+class DropdownChoices {
+  const DropdownChoices({this.title, this.color});
+
+  final String title;
+  final MaterialColor color;
+}
+
+class currentTag {
+  String current;
+  MaterialColor picker;
+
+  currentTag({this.current, this.picker});
+
 }
