@@ -20,12 +20,12 @@ class PictureBook {
 class Picture {
   String filename;
   String filepath;
-  List<Tag> tags;
+  Map<String, Tag> tags;
 
   Picture(filename, filepath) {
     this.filepath = filepath;
     this.filename = filename;
-    this.tags = List<Tag>();
+    this.tags = Map<String, Tag>();
   }
 
   factory Picture.fromJson(Map<String, dynamic> json) =>
@@ -38,8 +38,9 @@ class Picture {
 class Tag {
   String name;
   List<Location> location;
+  int color;
 
-  Tag({this.name});
+  Tag({this.name, this.color});
 
   factory Tag.fromJson(Map<String, dynamic> json) => _$TagFromJson(json);
 

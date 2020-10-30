@@ -22,9 +22,10 @@ Picture _$PictureFromJson(Map<String, dynamic> json) {
   return Picture(
     json['filename'],
     json['filepath'],
-  )..tags = (json['tags'] as List)
-      .map((e) => Tag.fromJson(e as Map<String, dynamic>))
-      .toList();
+  )
+    ..tags = (json['tags'] as Map<String, dynamic>).map(
+          (k, e) => MapEntry(k, Tag.fromJson(e as Map<String, dynamic>)),
+    );
 }
 
 Map<String, dynamic> _$PictureToJson(Picture instance) => <String, dynamic>{
@@ -36,6 +37,7 @@ Map<String, dynamic> _$PictureToJson(Picture instance) => <String, dynamic>{
 Tag _$TagFromJson(Map<String, dynamic> json) {
   return Tag(
     name: json['name'] as String,
+    color: json['color'] as int,
   )..location = (json['location'] as List)
       .map((e) => Location.fromJson(e as Map<String, dynamic>))
       .toList();
@@ -44,6 +46,7 @@ Tag _$TagFromJson(Map<String, dynamic> json) {
 Map<String, dynamic> _$TagToJson(Tag instance) => <String, dynamic>{
       'name': instance.name,
       'location': instance.location,
+  'color': instance.color,
     };
 
 Location _$LocationFromJson(Map<String, dynamic> json) {

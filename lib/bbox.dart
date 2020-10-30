@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -6,6 +7,7 @@ import 'package:flutter/material.dart';
 
 import 'file_manager.dart';
 import 'persistance.dart';
+import 'utils.dart';
 class DrawPage extends StatefulWidget {
   final String imagePath;
   final TmpFile tempfile;
@@ -22,7 +24,7 @@ class _DrawPageState extends State<DrawPage> {
   GlobalKey _paintKey = new GlobalKey();
   Offset _start;
   Offset _end;
-  currentTag current;
+  Tag current;
   ui.Image _image;
   List<List<Offset>> _listRect;
   List<DropdownChoices> dropdownChoices;
@@ -31,7 +33,8 @@ class _DrawPageState extends State<DrawPage> {
   void initState() {
     widget.tempfile.readPath();
     _listRect = [];
-    current = currentTag(current: "default", picker: Colors.blue);
+    current = Tag(name: "default", color: 0x000000ff);
+    current.location = List<Location>();
     _loadImage(widget.imagePath);
   }
 
@@ -42,6 +45,7 @@ class _DrawPageState extends State<DrawPage> {
     double h = end.dy - start.dy;
     return Location(x, y, w, h);
   }
+
 
   void _startPan(DragStartDetails details) {
     RenderBox referenceBox = _paintKey.currentContext.findRenderObject();
@@ -81,11 +85,14 @@ class _DrawPageState extends State<DrawPage> {
                           onPressed: () {
                             setState(() {
                               _listRect.add(x);
+                              current.location.add(
+                                  this.offsets_to_location(_start, _end));
+                              widget.tempfile.labels.pictures[widget.index]
+                                  .tags[current.name] = current;
                             });
                             Navigator.pop(context);
 
-//                            widget.tempfile.labels.pictures[widget.index].tags
-//                                .add(this.offsets_to_location(_start, _end));
+
                           },
                         ),
                         FlatButton(
@@ -144,7 +151,7 @@ class _DrawPageState extends State<DrawPage> {
   }
 
   List<DropdownChoices> userdropdownchoices = <DropdownChoices>[
-    DropdownChoices(title: 'Add new', color: Colors.blue),
+    DropdownChoices(title: 'Add new', color: 0x000000ff),
   ];
 
   void onTabTapped(int Index) {
@@ -152,15 +159,18 @@ class _DrawPageState extends State<DrawPage> {
   }
 
   void addTag(value) {
-    DropdownChoices newtag = DropdownChoices(title: value, color: Colors.amber);
+    int color = Random().nextInt(0xffffffff);
+    DropdownChoices newtag = DropdownChoices(title: value, color: color);
+    widget.tempfile.labels.pictures[widget.index].tags[value] =
+        Tag(name: value, color: color);
     userdropdownchoices.add(newtag);
   }
 
   void setCurrent(DropdownChoices) {
     print(DropdownChoices.title);
     setState(() {
-      current.current = DropdownChoices.title;
-      current.picker = DropdownChoices.color;
+      current.name = DropdownChoices.title;
+      current.color = DropdownChoices.color;
     });
   }
   @override
@@ -209,7 +219,7 @@ class _DrawPageState extends State<DrawPage> {
                     return PopupMenuItem<DropdownChoices>(
                         value: choice,
                         child: Container(
-                            color: this.current == choice.title
+                            color: this.current.name == choice.title
                                 ? Colors.blue
                                 : Colors.white,
                             alignment: Alignment.center,
@@ -217,7 +227,9 @@ class _DrawPageState extends State<DrawPage> {
                                 horizontal: 50.0),
                             child: Row(
                                 children: <Widget>[
-                                  Icon(Icons.label, color: choice.color,), Text(
+                                  Icon(Icons.label, color: MaterialColor(
+                                      choice.color,
+                                      getSwatch(Color(choice.color))),), Text(
                                     choice.title,
                                     style: new TextStyle(color: Colors.black),
                                   )
@@ -243,7 +255,13 @@ class _DrawPageState extends State<DrawPage> {
           child: new CustomPaint(
             key: _paintKey,
             painter: new MyCustomPainter(
-                _start, _end, _image, _listRect, current),
+                _start,
+                _end,
+                _image,
+                _listRect,
+                current,
+                widget.tempfile,
+                widget.index),
             child: new ConstrainedBox(
               constraints: new BoxConstraints.expand(),
             ),
@@ -263,14 +281,7 @@ class _DrawPageState extends State<DrawPage> {
             BottomNavigationBarItem(
               icon: Icon(Icons.arrow_forward),
               title: Text('Next'),
-
             ),
-
-//            BottomNavigationBarItem(
-//              icon: Icon(Icons.control_point),
-//              title: Text('Keypoints'),
-//            ),
-
           ],
         ));
   }
@@ -278,15 +289,17 @@ class _DrawPageState extends State<DrawPage> {
 
 class MyCustomPainter extends CustomPainter {
   final Offset _start;
-  final Offset _end;
+  Offset _end;
   final List<List<Offset>> listRect;
   double scale;
-  currentTag current;
+  Tag current;
   ui.Image _image;
+  TmpFile tempfile;
+  int index;
 
 
   MyCustomPainter(this._start, this._end, this._image, this.listRect,
-      this.current) :super();
+      this.current, this.tempfile, this.index) :super();
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -295,23 +308,33 @@ class MyCustomPainter extends CustomPainter {
     if (_image != null) {
       canvas.drawImage(_image, new Offset(0.0, 0.0), new Paint());
     }
-    drawExistingBBox(canvas);
     if (_end == null) return;
+    drawExistingBBox(canvas);
+
     drawCurrentBBox(_transform(_start), _transform(_end), canvas);
+    _end == null;
+
+
   }
 
   void drawExistingBBox(ui.Canvas canvas) {
-    if (listRect.length != 0) {
-      for (var i = 0; i < listRect.length; i++) {
+    Map<String, Tag> tags = tempfile.labels.pictures[index].tags;
+    tags.forEach((key, value) {
+      if (value.location != null) {
+        value.location.forEach((element) {
+          List<Offset> limits = location_to_offset(element);
         canvas.drawRect(
             Rect.fromPoints(
-                _transform(listRect[i][0]), _transform(listRect[i][1])),
+                _transform(limits[0]), limits[1]),
             new Paint()
-              ..color = current.picker
+              ..color = MaterialColor(
+                  value.color, getSwatch(Color(value.color)))
               ..style = PaintingStyle.stroke
               ..strokeWidth = (2 / this.scale));
+        });
       }
-    }
+    });
+
   }
 
   void drawCurrentBBox(Offset x, Offset y, ui.Canvas canvas) {
@@ -319,7 +342,8 @@ class MyCustomPainter extends CustomPainter {
     canvas.drawRect(
         Rect.fromPoints(x, y),
         new Paint()
-          ..color = current.picker
+          ..color = MaterialColor(
+              current.color, getSwatch(Color(current.color)))
           ..style = PaintingStyle.stroke
           ..strokeWidth = (2 / scale));
   }
@@ -328,21 +352,12 @@ class MyCustomPainter extends CustomPainter {
     return x / scale;
   }
 
+  List<Offset> location_to_offset(Location L) {
+    Offset start = Offset((L.x - L.w * 0.5), (L.y - L.h * 0.5));
+    Offset end = Offset((L.x + L.w * 0.5), (L.y + L.h * 0.5));
+    return [start, end];
+  }
   @override
   bool shouldRepaint(MyCustomPainter other) => true; //other._end != _end;
 }
 
-class DropdownChoices {
-  const DropdownChoices({this.title, this.color});
-
-  final String title;
-  final MaterialColor color;
-}
-
-class currentTag {
-  String current;
-  MaterialColor picker;
-
-  currentTag({this.current, this.picker});
-
-}
