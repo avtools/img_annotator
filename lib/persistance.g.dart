@@ -36,8 +36,8 @@ Map<String, dynamic> _$PictureToJson(Picture instance) => <String, dynamic>{
 
 Tag _$TagFromJson(Map<String, dynamic> json) {
   return Tag(
-    name: json['name'] as String,
-    color: json['color'] as int,
+    json['name'],
+    json['color'],
   )..location = (json['location'] as List)
       .map((e) => Location.fromJson(e as Map<String, dynamic>))
       .toList();

@@ -33,7 +33,7 @@ class _DrawPageState extends State<DrawPage> {
   void initState() {
     widget.tempfile.readPath();
     _listRect = [];
-    current = Tag(name: "default", color: 0x000000ff);
+    current = Tag("default", 0x000000ff);
     current.location = List<Location>();
     _loadImage(widget.imagePath);
   }
@@ -41,8 +41,8 @@ class _DrawPageState extends State<DrawPage> {
   Location offsets_to_location(Offset start, Offset end) {
     double x = (start.dx + end.dx) * 0.5;
     double y = (start.dy + end.dy) * 0.5;
-    double w = (end.dx - start.dx);
-    double h = end.dy - start.dy;
+    double w = (end.dx - start.dx).abs();
+    double h = (end.dy - start.dy).abs();
     return Location(x, y, w, h);
   }
 
@@ -85,10 +85,12 @@ class _DrawPageState extends State<DrawPage> {
                           onPressed: () {
                             setState(() {
                               _listRect.add(x);
-                              current.location.add(
-                                  this.offsets_to_location(_start, _end));
+                              //current.location.add(
+                              //    this.offsets_to_location(_start, _end));
                               widget.tempfile.labels.pictures[widget.index]
-                                  .tags[current.name] = current;
+                                  .tags[current.name].location.add(
+                                  this.offsets_to_location(_start, _end));
+
                             });
                             Navigator.pop(context);
 
@@ -152,6 +154,7 @@ class _DrawPageState extends State<DrawPage> {
 
   List<DropdownChoices> userdropdownchoices = <DropdownChoices>[
     DropdownChoices(title: 'Add new', color: 0x000000ff),
+
   ];
 
   void onTabTapped(int Index) {
@@ -159,10 +162,10 @@ class _DrawPageState extends State<DrawPage> {
   }
 
   void addTag(value) {
-    int color = Random().nextInt(0xffffffff);
+    int color = Random().nextInt(0xaaaaaaaa);
     DropdownChoices newtag = DropdownChoices(title: value, color: color);
     widget.tempfile.labels.pictures[widget.index].tags[value] =
-        Tag(name: value, color: color);
+        Tag(value, color);
     userdropdownchoices.add(newtag);
   }
 
@@ -308,10 +311,11 @@ class MyCustomPainter extends CustomPainter {
     if (_image != null) {
       canvas.drawImage(_image, new Offset(0.0, 0.0), new Paint());
     }
+    drawCurrentBBox(_transform(_start), _transform(_end), canvas);
     if (_end == null) return;
+
     drawExistingBBox(canvas);
 
-    drawCurrentBBox(_transform(_start), _transform(_end), canvas);
     _end == null;
 
 
@@ -320,12 +324,12 @@ class MyCustomPainter extends CustomPainter {
   void drawExistingBBox(ui.Canvas canvas) {
     Map<String, Tag> tags = tempfile.labels.pictures[index].tags;
     tags.forEach((key, value) {
-      if (value.location != null) {
+      if (value.location != []) {
         value.location.forEach((element) {
           List<Offset> limits = location_to_offset(element);
         canvas.drawRect(
             Rect.fromPoints(
-                _transform(limits[0]), limits[1]),
+                _transform(limits[0]), _transform(limits[1])),
             new Paint()
               ..color = MaterialColor(
                   value.color, getSwatch(Color(value.color)))
@@ -353,8 +357,8 @@ class MyCustomPainter extends CustomPainter {
   }
 
   List<Offset> location_to_offset(Location L) {
-    Offset start = Offset((L.x - L.w * 0.5), (L.y - L.h * 0.5));
-    Offset end = Offset((L.x + L.w * 0.5), (L.y + L.h * 0.5));
+    Offset start = Offset((L.x - (L.w * 0.5)), (L.y - (L.h * 0.5)));
+    Offset end = Offset((L.x + (L.w * 0.5)), (L.y + (L.h * 0.5)));
     return [start, end];
   }
   @override

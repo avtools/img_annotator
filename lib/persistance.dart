@@ -40,7 +40,11 @@ class Tag {
   List<Location> location;
   int color;
 
-  Tag({this.name, this.color});
+  Tag(name, color) {
+    this.name = name;
+    this.color = color;
+    this.location = List<Location>();
+  }
 
   factory Tag.fromJson(Map<String, dynamic> json) => _$TagFromJson(json);
 
