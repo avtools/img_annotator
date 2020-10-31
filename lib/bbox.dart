@@ -327,6 +327,11 @@ class MyCustomPainter extends CustomPainter {
       if (value.location != []) {
         value.location.forEach((element) {
           List<Offset> limits = location_to_offset(element);
+          canvas.drawCircle(_transform(limits[0]), 10, new Paint()
+            ..color = MaterialColor(
+                value.color, getSwatch(Color(value.color)))
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = (2 / this.scale));
         canvas.drawRect(
             Rect.fromPoints(
                 _transform(limits[0]), _transform(limits[1])),
@@ -335,6 +340,11 @@ class MyCustomPainter extends CustomPainter {
                   value.color, getSwatch(Color(value.color)))
               ..style = PaintingStyle.stroke
               ..strokeWidth = (2 / this.scale));
+          canvas.drawCircle(_transform(limits[1]), 10, new Paint()
+            ..color = MaterialColor(
+                value.color, getSwatch(Color(value.color)))
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = (2 / this.scale));
         });
       }
     });
@@ -343,6 +353,11 @@ class MyCustomPainter extends CustomPainter {
 
   void drawCurrentBBox(Offset x, Offset y, ui.Canvas canvas) {
     //print(x.toString() + "   " + y.toString());
+    canvas.drawCircle(x, 10, new Paint()
+      ..color = MaterialColor(
+          current.color, getSwatch(Color(current.color)))
+      ..style = PaintingStyle.fill
+      ..strokeWidth = (2 / this.scale));
     canvas.drawRect(
         Rect.fromPoints(x, y),
         new Paint()
@@ -350,6 +365,11 @@ class MyCustomPainter extends CustomPainter {
               current.color, getSwatch(Color(current.color)))
           ..style = PaintingStyle.stroke
           ..strokeWidth = (2 / scale));
+    canvas.drawCircle(y, 10, new Paint()
+      ..color = MaterialColor(
+          current.color, getSwatch(Color(current.color)))
+      ..style = PaintingStyle.fill
+      ..strokeWidth = (2 / this.scale));
   }
 
   Offset _transform(Offset x) {
